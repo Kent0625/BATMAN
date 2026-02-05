@@ -1,7 +1,7 @@
-// Survey data storage - Where the legend stats go!
+// Wayne Enterprises - Security Protocol JS
 const surveyData = [];
 
-// Get all the epic elements
+// Elements
 const form = document.getElementById('surveyForm');
 const surveyCard = document.getElementById('surveyCard');
 const nameInput = document.getElementById('name');
@@ -9,133 +9,136 @@ const ageInput = document.getElementById('age');
 const emailInput = document.getElementById('email');
 const favoriteNumberInput = document.getElementById('favoriteNumber');
 const charCounter = document.getElementById('charCounter');
+const vibeLevelInput = document.getElementById('vibeLevel');
+const vibeDisplay = document.getElementById('vibeDisplay');
+const visualFeedback = document.getElementById('visualFeedback');
+const submitBtn = document.getElementById('submitBtn');
 
-// Character counter with extra swag
+// Justice alignment display logic
+function updateJusticeFeedback(val) {
+    let text = `${val}% JUSTICE`;
+    let gifHtml = '';
+    let isActive = false;
+
+    if (val == 100) {
+        text = `⚖️ ${val}% ABSOLUTE JUSTICE`;
+        gifHtml = `<img src="batman.gif" alt="Batman Justice">`;
+        isActive = true;
+    } else if (val == 0) {
+        text = `🃏 ${val}% CHAOS DETECTED`;
+        gifHtml = `<img src="joker.gif" alt="Chaos">`;
+        isActive = true;
+    } else if (val > 70) {
+        text = `🛡️ ${val}% PROTECTOR`;
+    } else if (val > 50) {
+        text = `🔦 ${val}% VIGILANTE`;
+    } else if (val > 30) {
+        text = `🎭 ${val}% ANTI-HERO`;
+    } else {
+        text = `❔ ${val}% UNCERTAIN`;
+    }
+
+    vibeDisplay.textContent = text;
+    
+    if (isActive) {
+        visualFeedback.innerHTML = gifHtml;
+        visualFeedback.classList.add('active');
+    } else {
+        visualFeedback.classList.remove('active');
+        // Clear HTML after transition to avoid flicker
+        setTimeout(() => {
+            if (!visualFeedback.classList.contains('active')) {
+                visualFeedback.innerHTML = '';
+            }
+        }, 500);
+    }
+}
+
+vibeLevelInput.addEventListener('input', function() {
+    updateJusticeFeedback(this.value);
+});
+
+// Initialize feedback on load
+updateJusticeFeedback(vibeLevelInput.value);
+
+// Character counter
 nameInput.addEventListener('input', function() {
     const length = this.value.length;
     const maxLength = 50;
-    
-    if (length > maxLength) {
-        this.value = this.value.substring(0, maxLength);
-        charCounter.innerHTML = `<span class="counter-text">🔥 ${maxLength}/${maxLength} characters - MAX POWER! 🔥</span>`;
-    } else if (length > 40) {
-        charCounter.innerHTML = `<span class="counter-text">⚡ ${length}/${maxLength} characters - Almost there! ⚡</span>`;
-    } else if (length > 25) {
-        charCounter.innerHTML = `<span class="counter-text">💪 ${length}/${maxLength} characters - Looking good! 💪</span>`;
-    } else {
-        charCounter.innerHTML = `<span class="counter-text">📝 ${length}/${maxLength} characters</span>`;
-    }
+    charCounter.querySelector('.counter-text').textContent = `${length}/${maxLength} CHARACTERS`;
 });
 
-// Validation functions with extra sauce
-function validateName(name) {
-    return name.trim().length > 0;
-}
-
-function validateAge(age) {
-    const trimmedAge = age.trim();
-    const isInteger = /^\d+$/.test(trimmedAge);
-    const numAge = parseInt(trimmedAge);
-    return isInteger && numAge > 0 && numAge < 150;
-}
-
-function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-function validateFavoriteNumber(number) {
-    const trimmedNumber = number.trim();
-    return /^-?\d+$/.test(trimmedNumber);
-}
-
-// Show error with maximum meme energy
+// Validation
 function showError(input, errorElement, message) {
-    input.classList.add('error');
-    errorElement.innerHTML = `<span class="error-emoji">${getRandomErrorEmoji()}</span> ${message}`;
+    input.style.borderBottomColor = '#ff4d4d';
+    errorElement.textContent = message;
     errorElement.classList.add('show');
     surveyCard.classList.add('shake');
-    setTimeout(() => surveyCard.classList.remove('shake'), 600);
+    setTimeout(() => surveyCard.classList.remove('shake'), 400);
 }
 
-// Random error emojis for extra fun
-function getRandomErrorEmoji() {
-    const emojis = ['❌', '🚫', '💀', '🤦', '😵', '🙅', '⛔', '🚨'];
-    return emojis[Math.floor(Math.random() * emojis.length)];
-}
-
-// Clear error function
 function clearError(input, errorElement) {
-    input.classList.remove('error');
+    input.style.borderBottomColor = '';
     errorElement.classList.remove('show');
 }
 
-// Clear errors on input (with positive vibes)
-nameInput.addEventListener('input', () => clearError(nameInput, document.getElementById('nameError')));
-ageInput.addEventListener('input', () => clearError(ageInput, document.getElementById('ageError')));
-emailInput.addEventListener('input', () => clearError(emailInput, document.getElementById('emailError')));
-favoriteNumberInput.addEventListener('input', () => clearError(favoriteNumberInput, document.getElementById('favoriteNumberError')));
+[nameInput, ageInput, emailInput, favoriteNumberInput].forEach(input => {
+    input.addEventListener('input', () => {
+        const errorId = `${input.id}Error`;
+        clearError(input, document.getElementById(errorId));
+    });
+});
 
-// Form submission with MAXIMUM ENERGY
 form.addEventListener('submit', function(e) {
     e.preventDefault();
     
     let isValid = true;
+    let firstError = null;
 
-    // Validate name
-    if (!validateName(nameInput.value)) {
-        showError(nameInput, document.getElementById('nameError'), 'Yo, we need your name fam! Don\'t be shy! 😎');
+    if (nameInput.value.trim().length === 0) {
+        showError(nameInput, document.getElementById('nameError'), 'IDENTITY REQUIRED.');
         isValid = false;
+        if (!firstError) firstError = nameInput;
     }
 
-    // Validate age
-    if (!validateAge(ageInput.value)) {
-        let errorMsg = 'Bruh, age is a NUMBER not words! 🧮';
-        if (!/^\d+$/.test(ageInput.value.trim())) {
-            errorMsg = 'Nice try! Use digits like 25, not "twenty-five" 🤪';
-        } else if (parseInt(ageInput.value.trim()) >= 150) {
-            errorMsg = 'Bruh are you a time traveler? That\'s too old! 👴';
-        } else if (parseInt(ageInput.value.trim()) === 0) {
-            errorMsg = 'Zero? You a ghost or something? 👻';
-        }
-        showError(ageInput, document.getElementById('ageError'), errorMsg);
+    if (!ageInput.value || parseInt(ageInput.value) < 18) {
+        showError(ageInput, document.getElementById('ageError'), 'MINIMUM AGE 18 REQUIRED.');
         isValid = false;
+        if (!firstError) firstError = ageInput;
     }
 
-    // Validate email
-    if (!validateEmail(emailInput.value)) {
-        showError(emailInput, document.getElementById('emailError'), 'That email ain\'t it chief! Need that @ symbol! 📧');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailInput.value)) {
+        showError(emailInput, document.getElementById('emailError'), 'INVALID SECURE CHANNEL.');
         isValid = false;
+        if (!firstError) firstError = emailInput;
     }
 
-    // Validate favorite number
-    if (!validateFavoriteNumber(favoriteNumberInput.value)) {
-        let errorMsg = 'Numbers only fam! No letters allowed! 🔢';
-        if (!/^-?\d+$/.test(favoriteNumberInput.value.trim())) {
-            errorMsg = 'Bro... use actual numbers! Like 7, not "seven" 🎲';
-        }
-        showError(favoriteNumberInput, document.getElementById('favoriteNumberError'), errorMsg);
+    if (!favoriteNumberInput.value) {
+        showError(favoriteNumberInput, document.getElementById('favoriteNumberError'), 'ACCESS CODE REQUIRED.');
         isValid = false;
+        if (!firstError) firstError = favoriteNumberInput;
     }
 
-    // If everything is fire, let's gooooo!
     if (isValid) {
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.btn-text').textContent = 'AUTHENTICATING…';
+        spinner.hidden = false;
+
         const formData = {
             name: nameInput.value.trim(),
-            age: parseInt(ageInput.value.trim()),
+            age: ageInput.value,
             email: emailInput.value.trim(),
-            favoriteNumber: parseInt(favoriteNumberInput.value.trim()),
-            timestamp: new Date().toISOString(),
-            vibeLevel: '💯'
+            justiceLevel: vibeLevelInput.value,
+            timestamp: new Date().toISOString()
         };
 
-        surveyData.push(formData);
-        console.log('🔥 LEGENDARY SURVEY DATA STORED! 🔥', surveyData);
-        console.log('Latest submission:', formData);
+        localStorage.setItem('lastSurvey', JSON.stringify(formData));
 
-        // Delay redirect so you can see the console log
         setTimeout(() => {
             window.location.href = 'thankyou.html';
-        }, 2000); // 2 seconds delay
+        }, 1500);
+    } else if (firstError) {
+        firstError.focus();
     }
 });

@@ -3,68 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥 The Ultimate Vibe Check Survey 🔥</title>
+    <title>Wayne Enterprises | Security Protocol</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="meme-background"></div>
+    <div class="bat-background"></div>
     <div class="survey-container" id="surveyCard">
-        <div class="meme-header">
-            <h1>🎮 THE ULTIMATE VIBE CHECK 🎮</h1>
-            <p class="subtitle">⚡ Drop your stats, fam! No cap! ⚡</p>
+        <div class="bat-header">
+            <div class="bat-logo" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,2C12,2 11,3 9,3C7,3 6,2 6,2C6,2 6,4 4,6C2,8 2,10 2,10C2,10 3,10 4,11C5,12 5,14 5,14C5,14 6,13 8,13C10,13 11,14 11,14C11,14 11,12 12,12C13,12 13,14 13,14C13,14 14,13 16,13C18,13 19,14 19,14C19,14 19,12 20,11C21,10 22,10 22,10C22,10 22,8 20,6C18,4 18,2 18,2C18,2 17,3 15,3C13,3 12,2 12,2Z"/>
+                </svg>
+            </div>
+            <h1>WAYNE ENTERPRISES</h1>
+            <p class="subtitle">SECURITY CLEARANCE PROTOCOL 7.4.2</p>
         </div>
         
         <form id="surveyForm" novalidate>
             <div class="form-group">
-                <label for="name">
-                    <span class="emoji">👤</span> What do they call you, legend?
-                </label>
-                <input type="text" id="name" name="name" placeholder="Enter your epic name..." required>
-                <div class="char-counter" id="charCounter">
-                    <span class="counter-text">📝 0/50 characters</span>
+                <label for="name">Full Legal Alias</label>
+                <input type="text" id="name" name="name" placeholder="Enter your identity…" required autocomplete="name">
+                <div class="char-counter" id="charCounter" aria-live="polite">
+                    <span class="counter-text">0/50 Characters</span>
                 </div>
-                <div class="error-message" id="nameError">
-                    <span class="error-emoji">❌</span> Yo, we need your name fam!
+                <div class="error-message" id="nameError" aria-live="assertive">Identity required for clearance.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Years Active</label>
+                <input type="number" id="age" name="age" placeholder="Age (e.g., 35)…" required min="18" max="120">
+                <div class="error-message" id="ageError" aria-live="assertive">Valid age required for Wayne Tech access.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Secure Communication Channel</label>
+                <input type="email" id="email" name="email" placeholder="alias@waynetech.com…" required autocomplete="email" spellcheck="false">
+                <div class="error-message" id="emailError" aria-live="assertive">Invalid communication protocol.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="vibeLevel">Justice Alignment Index</label>
+                <div class="range-container">
+                    <input type="range" id="vibeLevel" name="vibeLevel" min="0" max="100" value="100">
+                    <span id="vibeDisplay" class="counter-text">⚖️ 100% ABSOLUTE JUSTICE</span>
+                </div>
+                <div id="visualFeedback" class="visual-feedback" aria-hidden="true">
+                    <!-- Dynamic GIF will appear here -->
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="age">
-                    <span class="emoji">🎂</span> How many times you've been around the sun?
-                </label>
-                <input type="text" id="age" name="age" placeholder="Just numbers, no cap (e.g., 25)" required>
-                <div class="error-message" id="ageError">
-                    <span class="error-emoji">🚫</span> Bruh, age is a NUMBER not words!
-                </div>
+                <label for="favoriteNumber">Authorized Access Code</label>
+                <input type="number" id="favoriteNumber" name="favoriteNumber" placeholder="Numeric key required…" required>
+                <div class="error-message" id="favoriteNumberError" aria-live="assertive">Numeric authorization only.</div>
             </div>
 
-            <div class="form-group">
-                <label for="email">
-                    <span class="emoji">📧</span> Where can we slide into your DMs?
-                </label>
-                <input type="email" id="email" name="email" placeholder="your.epic@email.com" required>
-                <div class="error-message" id="emailError">
-                    <span class="error-emoji">💀</span> That email ain't it chief!
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="favoriteNumber">
-                    <span class="emoji">🎲</span> Your lucky number (the GOAT number)?
-                </label>
-                <input type="text" id="favoriteNumber" name="favoriteNumber" placeholder="Drop that magic number!" required>
-                <div class="error-message" id="favoriteNumberError">
-                    <span class="error-emoji">🤦</span> Numbers only fam! (Like 7, not "seven")
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn">
-                <span class="btn-text">🚀 YEET THIS SURVEY! 🚀</span>
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="btn-text">AUTHENTICATE IDENTITY</span>
+                <span class="spinner" id="spinner" hidden aria-hidden="true"></span>
             </button>
         </form>
 
-        <div class="meme-footer">
-            <p>💯 Certified dank survey 💯</p>
+        <div class="bat-footer">
+            <p>© Wayne Enterprises. All rights reserved. I am the night.</p>
         </div>
     </div>
 
