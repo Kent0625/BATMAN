@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wayne Enterprises | Authentication Success</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bat-background"></div>
+    <div class="survey-container" style="text-align: center;">
+        <div class="bat-header">
+            <div class="bat-logo" aria-hidden="true" style="color: var(--bat-gold);">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,2C12,2 11,3 9,3C7,3 6,2 6,2C6,2 6,4 4,6C2,8 2,10 2,10C2,10 3,10 4,11C5,12 5,14 5,14C5,14 6,13 8,13C10,13 11,14 11,14C11,14 11,12 12,12C13,12 13,14 13,14C13,14 14,13 16,13C18,13 19,14 19,14C19,14 19,12 20,11C21,10 22,10 22,10C22,10 22,8 20,6C18,4 18,2 18,2C18,2 17,3 15,3C13,3 12,2 12,2Z"/>
+                </svg>
+            </div>
+            <h1>IDENTITY VERIFIED</h1>
+            <p class="subtitle">SECURITY CLEARANCE GRANTED</p>
+        </div>
+
+        <div style="margin: 40px 0;">
+            <p style="color: var(--text-dim); font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Protocol complete, <span id="userName" style="color: #fff; font-weight: 700;">Citizen</span>.</p>
+            <p id="vibeResult" style="color: var(--bat-gold); font-size: 18px; font-weight: 900; margin-top: 20px; letter-spacing: 2px;"></p>
+            <div id="finalVisual" class="visual-feedback"></div>
+        </div>
+
+        <p style="color: var(--text-dim); font-size: 12px; line-height: 1.6;">Your data has been encrypted and stored in the Wayne Tech secure vault. Gotham thanks you for your cooperation.</p>
+        
+        <a href="index.html" class="submit-btn" style="display: block; text-decoration: none; margin-top: 40px;">RETURN TO TERMINAL</a>
+
+        <div class="bat-footer">
+            <p>CASE CLOSED. THE NIGHT HAS JUST BEGUN.</p>
+        </div>
+    </div>
+
+    <script>
+        const lastSurvey = JSON.parse(localStorage.getItem('lastSurvey'));
+        if (lastSurvey) {
+            document.getElementById('userName').textContent = lastSurvey.name.toUpperCase();
+            const level = lastSurvey.justiceLevel;
+            const vibeResult = document.getElementById('vibeResult');
+            const finalVisual = document.getElementById('finalVisual');
+            
+            let text = `${level}% JUSTICE`;
+            let gif = '';
+            let isActive = false;
+
+            if (level == 100) {
+                text = `⚖️ ${level}% ABSOLUTE JUSTICE`;
+                gif = `<img src="src/batman.gif" style="height: 100%;">`;
+                isActive = true;
+            } else if (level == 0) {
+                text = `🃏 ${level}% CHAOS DETECTED`;
+                gif = `<img src="src/joker.gif" style="height: 100%;">`;
+                isActive = true;
+            } else if (level > 70) text = `🛡️ ${level}% PROTECTOR`;
+            else if (level > 50) text = `🔦 ${level}% VIGILANTE`;
+            else if (level > 30) text = `🎭 ${level}% ANTI-HERO`;
+            else text = `❔ ${level}% UNCERTAIN`;
+
+            vibeResult.textContent = text;
+            if (isActive) {
+                finalVisual.innerHTML = gif;
+                setTimeout(() => finalVisual.classList.add('active'), 100);
+            }
+        }
+    </script>
+</body>
+</html>
