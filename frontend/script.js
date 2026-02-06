@@ -7,12 +7,14 @@ const surveyCard = document.getElementById('surveyCard');
 const nameInput = document.getElementById('name');
 const ageInput = document.getElementById('age');
 const emailInput = document.getElementById('email');
-const favoriteNumberInput = document.getElementById('favoriteNumber');
+const accessCodeInput = document.getElementById('accessToken');
 const charCounter = document.getElementById('charCounter');
 const vibeLevelInput = document.getElementById('vibeLevel');
 const vibeDisplay = document.getElementById('vibeDisplay');
 const visualFeedback = document.getElementById('visualFeedback');
+//favoriteNumberInput
 const submitBtn = document.getElementById('submitBtn');
+const generateBtn = document.getElementById('generateBtn'); // Added this
 
 // Justice alignment display logic
 function updateJusticeFeedback(val) {
@@ -22,11 +24,11 @@ function updateJusticeFeedback(val) {
 
     if (val == 100) {
         text = `⚖️ ${val}% ABSOLUTE JUSTICE`;
-        gifHtml = `<img src="batman.gif" alt="Batman Justice">`;
+        gifHtml = `<img src="src/batman.gif" alt="Batman Justice">`;
         isActive = true;
     } else if (val == 0) {
         text = `🃏 ${val}% CHAOS DETECTED`;
-        gifHtml = `<img src="joker.gif" alt="Chaos">`;
+        gifHtml = `<img src="src/joker.gif" alt="Chaos">`;
         isActive = true;
     } else if (val > 70) {
         text = `🛡️ ${val}% PROTECTOR`;
@@ -45,7 +47,6 @@ function updateJusticeFeedback(val) {
         visualFeedback.classList.add('active');
     } else {
         visualFeedback.classList.remove('active');
-        // Clear HTML after transition to avoid flicker
         setTimeout(() => {
             if (!visualFeedback.classList.contains('active')) {
                 visualFeedback.innerHTML = '';
@@ -58,7 +59,6 @@ vibeLevelInput.addEventListener('input', function() {
     updateJusticeFeedback(this.value);
 });
 
-// Initialize feedback on load
 updateJusticeFeedback(vibeLevelInput.value);
 
 // Character counter
@@ -68,7 +68,7 @@ nameInput.addEventListener('input', function() {
     charCounter.querySelector('.counter-text').textContent = `${length}/${maxLength} CHARACTERS`;
 });
 
-// Validation
+// Validation Helper
 function showError(input, errorElement, message) {
     input.style.borderBottomColor = '#ff4d4d';
     errorElement.textContent = message;
@@ -82,12 +82,39 @@ function clearError(input, errorElement) {
     errorElement.classList.remove('show');
 }
 
-[nameInput, ageInput, emailInput, favoriteNumberInput].forEach(input => {
+[nameInput, ageInput, emailInput, accessCodeInput].forEach(input => {
     input.addEventListener('input', () => {
         const errorId = `${input.id}Error`;
         clearError(input, document.getElementById(errorId));
     });
 });
+
+// --- NEW FEATURE: Access Code Generator ---
+function generateAccessCode() {
+    // Generate random number between 0 and 9999
+    const randomNum = Math.floor(Math.random() * 10000);
+    // Pad with zeros (e.g. 7 -> "0007")
+    const code = randomNum.toString().padStart(4, '0');
+    
+    // Typing effect
+    accessCodeInput.value = '';
+    let i = 0;
+    const typeWriter = setInterval(() => {
+        accessCodeInput.value += code.charAt(i);
+        i++;
+        if (i >= code.length) {
+            clearInterval(typeWriter);
+            // Clear error specifically after typing finishes
+            clearError(accessCodeInput, document.getElementById('AccessCodeError'));
+        }
+    }, 50);
+}
+
+generateBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    generateAccessCode();
+});
+// ------------------------------------------
 
 form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -114,31 +141,48 @@ form.addEventListener('submit', function(e) {
         if (!firstError) firstError = emailInput;
     }
 
-    if (!favoriteNumberInput.value) {
-        showError(favoriteNumberInput, document.getElementById('favoriteNumberError'), 'ACCESS CODE REQUIRED.');
+    if (!accessCodeInput.value) {
+        showError(accessCodeInput, document.getElementById('AccessCodeError'), 'ACCESS CODE REQUIRED. CLICK GENERATE.');
         isValid = false;
-        if (!firstError) firstError = favoriteNumberInput;
+        if (!firstError) firstError = accessCodeInput;
     }
 
     if (isValid) {
         submitBtn.disabled = true;
         submitBtn.querySelector('.btn-text').textContent = 'AUTHENTICATING…';
-        spinner.hidden = false;
+        const spinner = document.getElementById('spinner');
+        if(spinner) spinner.hidden = false;
 
         const formData = {
             name: nameInput.value.trim(),
-            age: ageInput.value,
+            age: parseInt(ageInput.value),
             email: emailInput.value.trim(),
-            justiceLevel: vibeLevelInput.value,
+            justice_level: parseInt(vibeLevelInput.value),
+            access_token: accessCodeInput.value, // Sends as String
             timestamp: new Date().toISOString()
         };
 
-        localStorage.setItem('lastSurvey', JSON.stringify(formData));
+        fetch('http://127.0.0.1:8000/submit/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        }).catch(error => {
+            console.error('Error:', error);
+            alert("CONNECTION FAILED. IS THE BACKEND RUNNING?");
+            submitBtn.disabled = false;
+            submitBtn.querySelector('.btn-text').textContent = 'RETRY CONNECTION';
+        });
 
-        setTimeout(() => {
-            window.location.href = 'thankyou.html';
-        }, 1500);
-    } else if (firstError) {
-        firstError.focus();
-    }
+
+        window.location.href = 'thankyou.html';
+
+        localStorage.setItem('lastSurvey', JSON.stringify({
+            name: formData.name,
+            justiceLevel: formData.justice_level
+        }));
+
+        } else {
+            throw new Error('Server Rejected Protocol');
+        }
+
 });
