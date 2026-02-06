@@ -1,9 +1,11 @@
-Run database first:
+# 1. Run database first:
+Go to backend
 ```bash
-   docker-compose up
+   cd backend
+```
+Run app
+```bash
+   uvicorn main:app --reload
 ```
 
-Open browser and go to:
-```
-   http://localhost
-```
+Then go to frontend folder and open `index.html` as live server
