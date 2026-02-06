@@ -51,27 +51,31 @@
                     <span id="vibeDisplay" class="counter-text">⚖️ 100% ABSOLUTE JUSTICE</span>
                 </div>
                 <div id="visualFeedback" class="visual-feedback" aria-hidden="true">
-                    <!-- Dynamic GIF will appear here -->
-                </div>
+                    </div>
             </div>
 
             <div class="form-group">
-                <label for="favoriteNumber">Authorized Access Code</label>
-                <input type="number" id="favoriteNumber" name="favoriteNumber" placeholder="Numeric key required…" required>
-                <div class="error-message" id="favoriteNumberError" aria-live="assertive">Numeric authorization only.</div>
+                <label for="accessToken">Authorized Access Code</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="accessToken" name="accessToken" 
+                           placeholder="GENERATE CODE..." 
+                           readonly 
+                           style="letter-spacing: 5px; font-weight: bold; color: var(--bat-gold);">
+                    
+                    <button type="button" id="generateBtn" class="submit-btn" 
+                            style="width: auto; margin-top: 0; padding: 0 20px; font-size: 10px;">
+                        GENERATE
+                    </button>
+                </div>
+                <div class="error-message" id="accessTokenError" aria-live="assertive">Code generation required.</div>
             </div>
 
-            <button type="submit" class="submit-btn" id="submitBtn">
-                <span class="btn-text">AUTHENTICATE IDENTITY</span>
-                <span class="spinner" id="spinner" hidden aria-hidden="true"></span>
+            <button type="submit" id="submitBtn" class="submit-btn">
+                <span class="btn-text">INITIATE PROTOCOL</span>
+                <!-- <span class="spinner" id="spinner" hidden></span> -->
             </button>
         </form>
-
-        <div class="bat-footer">
-            <p>© Wayne Enterprises. All rights reserved. I am the night.</p>
-        </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
