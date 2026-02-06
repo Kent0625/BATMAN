@@ -1,6 +1,36 @@
 // Wayne Enterprises - Security Protocol JS
 const surveyData = [];
 
+// --- AUTO-GENERATION LOGIC ---
+function generateAccessCode() {
+    // Only generate if the field is currently empty
+    if (favoriteNumberInput.value === "") {
+        const code = Math.floor(100000 + Math.random() * 900000);
+        favoriteNumberInput.value = code;
+        
+        // Trigger an input event so the validation logic knows the field is filled
+        favoriteNumberInput.dispatchEvent(new Event('input'));
+        
+        // Visual cue: JavaScript-forced colors removed to let CSS handle the styling
+    }
+}
+
+// Logic to check if required fields are valid
+function checkFormCompletion() {
+    const isNameValid = nameInput.value.trim().length > 0;
+    const isAgeValid = ageInput.value && parseInt(ageInput.value) >= 18;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = emailRegex.test(emailInput.value);
+
+    // Criteria: All primary identity fields must be valid before unlocking the code
+    if (isNameValid && isAgeValid && isEmailValid) {
+        generateAccessCode();
+    } else {
+        // If they delete required info, we revoke the code
+        favoriteNumberInput.value = "";
+    }
+}
+
 // Elements
 const form = document.getElementById('surveyForm');
 const surveyCard = document.getElementById('surveyCard');
@@ -13,6 +43,7 @@ const vibeLevelInput = document.getElementById('vibeLevel');
 const vibeDisplay = document.getElementById('vibeDisplay');
 const visualFeedback = document.getElementById('visualFeedback');
 const submitBtn = document.getElementById('submitBtn');
+const spinner = document.getElementById('spinner');
 
 // Justice alignment display logic
 function updateJusticeFeedback(val) {
@@ -45,7 +76,6 @@ function updateJusticeFeedback(val) {
         visualFeedback.classList.add('active');
     } else {
         visualFeedback.classList.remove('active');
-        // Clear HTML after transition to avoid flicker
         setTimeout(() => {
             if (!visualFeedback.classList.contains('active')) {
                 visualFeedback.innerHTML = '';
@@ -58,8 +88,10 @@ vibeLevelInput.addEventListener('input', function() {
     updateJusticeFeedback(this.value);
 });
 
-// Initialize feedback on load
-updateJusticeFeedback(vibeLevelInput.value);
+// INITIALIZE: Run feedback on load
+window.addEventListener('load', () => {
+    updateJusticeFeedback(vibeLevelInput.value);
+});
 
 // Character counter
 nameInput.addEventListener('input', function() {
@@ -68,7 +100,7 @@ nameInput.addEventListener('input', function() {
     charCounter.querySelector('.counter-text').textContent = `${length}/${maxLength} CHARACTERS`;
 });
 
-// Validation
+// Validation Visuals
 function showError(input, errorElement, message) {
     input.style.borderBottomColor = '#ff4d4d';
     errorElement.textContent = message;
@@ -82,10 +114,17 @@ function clearError(input, errorElement) {
     errorElement.classList.remove('show');
 }
 
+// Check completion whenever user inputs data
 [nameInput, ageInput, emailInput, favoriteNumberInput].forEach(input => {
     input.addEventListener('input', () => {
         const errorId = `${input.id}Error`;
-        clearError(input, document.getElementById(errorId));
+        const errorEl = document.getElementById(errorId);
+        if (errorEl) clearError(input, errorEl);
+        
+        // Identity field check to trigger code generation
+        if (input !== favoriteNumberInput) {
+            checkFormCompletion();
+        }
     });
 });
 
@@ -115,7 +154,7 @@ form.addEventListener('submit', function(e) {
     }
 
     if (!favoriteNumberInput.value) {
-        showError(favoriteNumberInput, document.getElementById('favoriteNumberError'), 'ACCESS CODE REQUIRED.');
+        showError(favoriteNumberInput, document.getElementById('favoriteNumberError'), 'ACCESS CODE REQUIRED. COMPLETE IDENTITY PROFILE.');
         isValid = false;
         if (!firstError) firstError = favoriteNumberInput;
     }
@@ -123,13 +162,14 @@ form.addEventListener('submit', function(e) {
     if (isValid) {
         submitBtn.disabled = true;
         submitBtn.querySelector('.btn-text').textContent = 'AUTHENTICATING…';
-        spinner.hidden = false;
+        if (spinner) spinner.hidden = false;
 
         const formData = {
             name: nameInput.value.trim(),
             age: ageInput.value,
             email: emailInput.value.trim(),
             justiceLevel: vibeLevelInput.value,
+            accessCode: favoriteNumberInput.value,
             timestamp: new Date().toISOString()
         };
 
