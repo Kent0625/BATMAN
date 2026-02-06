@@ -1,5 +1,5 @@
 # 1. Run database first:
-Go to backend
+Open terminal
 ```bash
    cd backend
 ```
