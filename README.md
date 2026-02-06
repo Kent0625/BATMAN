@@ -9,4 +9,4 @@ Run app
 ```
 
 # 2. Frontend
-Then go to frontend folder and open `index.html` as live server
+Then go to frontend folder and run `index.html` (open live server)
