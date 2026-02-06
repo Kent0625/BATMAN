@@ -8,4 +8,5 @@ Run app
    uvicorn main:app --reload
 ```
 
+# 2. Frontend
 Then go to frontend folder and open `index.html` as live server
