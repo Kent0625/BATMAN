@@ -1,10 +1,4 @@
-Members: 
-- Alasan
-- Bitco
-- Macalam
-- Mallari
-- Sevilla
-- Tion
+Members: `Alasan`, `Bitco`, `Macalam`, `Mallari`, `Sevilla`, `Tion`
 
 # 1. Run database first:
 Open terminal
